@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "prompt": "Summarize what machine learning is in simple words",
+    "expected_intent": "summary_request",
+    "expected_route": "summary_node"
+  },
+  {
+    "id": 2,
+    "prompt": "Explain the difference between RAM and ROM briefly",
+    "expected_intent": "summary_request",
+    "expected_route": "summary_node"
+  },
+  {
+    "id": 3,
+    "prompt": "What is the capital of France?",
+    "expected_intent": "question_answer",
+    "expected_route": "qa_node"
+  },
+  {
+    "id": 4,
+    "prompt": "Who invented the telephone and in what year?",
+    "expected_intent": "question_answer",
+    "expected_route": "qa_node"
+  },
+  {
+    "id": 5,
+    "prompt": "How does photosynthesis work?",
+    "expected_intent": "question_answer",
+    "expected_route": "qa_node"
+  },
+  {
+    "id": 6,
+    "prompt": "Write a short poem about the rain",
+    "expected_intent": "creative_request",
+    "expected_route": "creative_node"
+  },
+  {
+    "id": 7,
+    "prompt": "Give me 5 startup ideas for university students",
+    "expected_intent": "creative_request",
+    "expected_route": "creative_node"
+  },
+  {
+    "id": 8,
+    "prompt": "Brainstorm some unique names for a coffee shop",
+    "expected_intent": "creative_request",
+    "expected_route": "creative_node"
+  },
+  {
+    "id": 9,
+    "prompt": "Hello! How are you doing today?",
+    "expected_intent": "general_chat",
+    "expected_route": "general_node"
+  },
+  {
+    "id": 10,
+    "prompt": "What kinds of things can you help me with?",
+    "expected_intent": "general_chat",
+    "expected_route": "general_node"
+  }
+]
