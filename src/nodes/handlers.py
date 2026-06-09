@@ -1,3 +1,4 @@
+import time
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import SystemMessage, HumanMessage
 from src.config import GEMINI_API_KEY, MODEL_NAME, TEMPERATURE
@@ -43,10 +44,8 @@ PROMPT_MAP = {
 }
 
 
+
 def _handle(state: AgentState, node_name: str) -> AgentState:
-    """
-    Shared handler logic used by all four handler nodes.
-    """
     trace = state.get("trace", [])
     retry = state.get("retry_count", 0)
     feedback = state.get("review_feedback", "")
@@ -55,7 +54,6 @@ def _handle(state: AgentState, node_name: str) -> AgentState:
 
     system_prompt = PROMPT_MAP.get(node_name, GENERAL_PROMPT)
 
-    # On retry, append reviewer feedback so the model can improve
     user_content = state["user_query"]
     if retry > 0 and feedback:
         user_content = (
@@ -69,8 +67,21 @@ def _handle(state: AgentState, node_name: str) -> AgentState:
         HumanMessage(content=user_content),
     ]
 
-    response = llm.invoke(messages)
-    raw_answer = response.content.strip()
+    # Retry on server errors like 503
+    max_attempts = 3
+    for attempt in range(max_attempts):
+        try:
+            response = llm.invoke(messages)
+            raw_answer = response.content.strip()
+            break
+        except Exception as e:
+            if attempt < max_attempts - 1:
+                wait = 10 * (attempt + 1)
+                trace.append(f"   [{node_name}] Server error, retrying in {wait}s... ({e})")
+                time.sleep(wait)
+            else:
+                raw_answer = "Sorry, the AI service is currently unavailable. Please try again."
+                trace.append(f"   [{node_name}] All retries failed: {e}")
 
     trace.append(f"   [{node_name}] Answer generated ({len(raw_answer)} chars)")
 
@@ -79,8 +90,6 @@ def _handle(state: AgentState, node_name: str) -> AgentState:
         "raw_answer": raw_answer,
         "trace": trace,
     }
-
-
 # ── Four named handler nodes ───────────────────────────────────────────────────
 
 def summary_node(state: AgentState) -> AgentState:
