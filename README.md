@@ -191,6 +191,11 @@ GitHub Actions runs on every push:
 - Validates imports
 - Runs all 15 tests
 
+<img width="1920" height="1080" alt="Screenshot (494)" src="https://github.com/user-attachments/assets/6257e81d-f253-4029-beaa-d19ffcdaab71" />
+
+<img width="1920" height="1080" alt="Screenshot (495)" src="https://github.com/user-attachments/assets/648baa52-1d71-4938-a48f-00d68f7f37dd" />
+
+
 ## What is Complete
 
 - LangGraph graph with 4+ nodes: classifier, handler x4, reviewer, final response
@@ -203,6 +208,8 @@ GitHub Actions runs on every push:
 - 10 test prompts covering all 4 intents
 - GitHub Actions CI pipeline
 - Clean modular code structure
+
+<img width="1920" height="1080" alt="Screenshot (484)" src="https://github.com/user-attachments/assets/8d833618-be16-4182-a7b9-33a12872cc81" />
 
 ## What Can Be Improved
 
