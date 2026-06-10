@@ -20,7 +20,6 @@ st.markdown("""
         color: #e2e8f0;
     }
 
-    /* Top navbar strip */
     .navbar {
         background: #161b27;
         border-bottom: 1px solid #1e2536;
@@ -43,7 +42,6 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
 
-    /* Hero */
     .hero {
         text-align: center;
         padding: 48px 0 36px 0;
@@ -61,7 +59,6 @@ st.markdown("""
         font-weight: 400;
     }
 
-    /* Pipeline steps */
     .pipeline {
         display: flex;
         justify-content: center;
@@ -90,15 +87,6 @@ st.markdown("""
         padding: 0 6px;
     }
 
-    /* Input area */
-    .input-container {
-        background: #161b27;
-        border: 1px solid #1e2536;
-        border-radius: 12px;
-        padding: 24px;
-        margin-bottom: 16px;
-    }
-
     .stTextInput > div > div > input {
         background: #0f1117 !important;
         border: 1px solid #1e2536 !important;
@@ -116,7 +104,6 @@ st.markdown("""
         color: #334155 !important;
     }
 
-    /* Run button */
     .stButton > button {
         background: #4f46e5 !important;
         border: none !important;
@@ -132,7 +119,6 @@ st.markdown("""
         background: #4338ca !important;
     }
 
-    /* Example chips */
     .example-label {
         color: #475569;
         font-size: 0.78rem;
@@ -156,7 +142,6 @@ st.markdown("""
         background: #1e1b4b !important;
     }
 
-    /* Section headers */
     .section-header {
         font-size: 0.7rem;
         font-weight: 600;
@@ -168,7 +153,6 @@ st.markdown("""
         border-bottom: 1px solid #1e2536;
     }
 
-    /* Trace items */
     .trace-node {
         display: flex;
         align-items: center;
@@ -183,15 +167,20 @@ st.markdown("""
         font-size: 0.82rem;
         font-weight: 600;
         color: #a5b4fc;
+        word-wrap: break-word;
+        white-space: normal;
+        width: 100%;
     }
     .trace-detail {
         font-size: 0.78rem;
         color: #475569;
         padding: 4px 14px 4px 27px;
         margin-bottom: 3px;
+        word-wrap: break-word;
+        white-space: normal;
+        line-height: 1.5;
     }
 
-    /* Metric cards */
     .metric-row {
         display: flex;
         gap: 12px;
@@ -224,26 +213,74 @@ st.markdown("""
         color: #f87171;
     }
 
-    /* Answer box */
-    .answer-box {
+    /* Answer markdown styling */
+    .answer-wrapper {
         background: #161b27;
         border: 1px solid #1e2536;
         border-radius: 10px;
         padding: 22px 24px;
-        color: #cbd5e1;
-        font-size: 0.92rem;
-        line-height: 1.9;
-        white-space: pre-wrap;
+    }
+    .answer-wrapper p {
+        color: #cbd5e1 !important;
+        font-size: 0.92rem !important;
+        line-height: 1.9 !important;
+        margin-bottom: 10px !important;
+    }
+    .answer-wrapper li {
+        color: #cbd5e1 !important;
+        font-size: 0.92rem !important;
+        line-height: 1.8 !important;
+        margin-bottom: 6px !important;
+    }
+    .answer-wrapper h1,
+    .answer-wrapper h2,
+    .answer-wrapper h3,
+    .answer-wrapper h4 {
+        color: #e2e8f0 !important;
+        margin-top: 16px !important;
+        margin-bottom: 8px !important;
+    }
+    .answer-wrapper strong {
+        color: #e2e8f0 !important;
+    }
+    .answer-wrapper code {
+        background: #0f1117 !important;
+        color: #a5b4fc !important;
+        padding: 2px 6px !important;
+        border-radius: 4px !important;
+        font-size: 0.85rem !important;
+    }
+    .answer-wrapper ol {
+        padding-left: 20px !important;
+    }
+    .answer-wrapper ul {
+        padding-left: 20px !important;
     }
 
-    /* Divider */
     hr { border-color: #1e2536 !important; }
-
-    /* Hide streamlit default UI */
     #MainMenu { visibility: hidden; }
     footer { visibility: hidden; }
     .stDeployButton { display: none; }
     header { background: transparent !important; }
+
+    /* Global markdown fix */
+    .stMarkdown p {
+        color: #cbd5e1;
+        font-size: 0.92rem;
+        line-height: 1.8;
+    }
+    .stMarkdown li {
+        color: #cbd5e1;
+        font-size: 0.92rem;
+        line-height: 1.8;
+    }
+    .stMarkdown strong {
+        color: #e2e8f0;
+    }
+    .stMarkdown h1, .stMarkdown h2,
+    .stMarkdown h3, .stMarkdown h4 {
+        color: #e2e8f0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -356,6 +393,10 @@ if submit and user_query.strip():
                         unsafe_allow_html=True
                     )
 
+            retry_count = result.get("retry_count", 0)
+            if retry_count > 0:
+                st.warning(f"Answer revised {retry_count} time(s)")
+
         # ── Result ─────────────────────────────────────────────────────────────
         with right:
             st.markdown('<div class="section-header">Result</div>', unsafe_allow_html=True)
@@ -383,6 +424,9 @@ if submit and user_query.strip():
             </div>
             """, unsafe_allow_html=True)
 
+            # Answer
+            st.markdown('<div class="section-header" style="margin-top:4px;">Answer</div>', unsafe_allow_html=True)
+
             final_raw = result.get("final_answer", "{}")
             try:
                 parsed = json.loads(final_raw)
@@ -390,15 +434,21 @@ if submit and user_query.strip():
             except (json.JSONDecodeError, AttributeError):
                 answer_text = final_raw
 
-            st.markdown('<div class="section-header" style="margin-top:4px;">Answer</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="answer-box">{answer_text}</div>', unsafe_allow_html=True)
+            st.markdown('<div class="answer-wrapper">', unsafe_allow_html=True)
+            st.markdown(answer_text)
+            st.markdown('</div>', unsafe_allow_html=True)
 
+            # Reviewer feedback
             feedback = result.get("review_feedback", "")
             if feedback:
                 st.markdown("<br>", unsafe_allow_html=True)
                 with st.expander("Reviewer Feedback"):
-                    st.markdown(f'<span style="color:#94a3b8; font-size:0.88rem;">{feedback}</span>', unsafe_allow_html=True)
+                    st.markdown(
+                        f'<span style="color:#94a3b8; font-size:0.88rem;">{feedback}</span>',
+                        unsafe_allow_html=True
+                    )
 
+            # Raw JSON
             with st.expander("Raw JSON"):
                 try:
                     st.json(json.loads(final_raw))
